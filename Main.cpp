@@ -6,6 +6,7 @@
 #include "Engine/Input.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
+#include"Engine/Quad.h"
 
 #pragma comment(lib, "winmm.lib")
 
@@ -85,6 +86,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	Camera::Initialize(winW, winH);
 
+	Quad* pQuad = new Quad;
+	pQuad->Initialize();
+
 	pRootJob = new RootJob(nullptr);
 	pRootJob->Initialize();
 	
@@ -150,6 +154,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			//描画
 			Direct3D::BeginDraw();
 
+			//描画処理
+			//static float angle = 0;
+			//angle += 0.03;
+			//XMMATRIX matR = XMMatrixRotationY(XMConvertToRadians(angle));  //回転行列
+			////XMMATRIX matR2 = XMMatrixRotationZ(XMConvertToRadians(angle));//
+			//XMMATRIX matT = XMMatrixTranslation(1, 0, 0);  //移動行列
+			//XMMATRIX matS = XMMatrixScaling(2, 2, 2);  //拡大行列
+			//XMMATRIX mat = matR * matS * matT; //  //RST
+			Transform matq;
+			pQuad->Draw(matq);
+
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
 
@@ -160,6 +175,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	
 	Model::Release();
 	pRootJob->ReleaseSub();
+	SAFE_DELETE(pQuad);
 	SAFE_DELETE(pRootJob);
 	Input::Release();
 	Direct3D::Release();
