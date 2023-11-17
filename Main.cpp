@@ -162,8 +162,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			//XMMATRIX matT = XMMatrixTranslation(1, 0, 0);  //移動行列
 			//XMMATRIX matS = XMMatrixScaling(2, 2, 2);  //拡大行列
 			//XMMATRIX mat = matR * matS * matT; //  //RST
-			Transform matq;
-			pQuad->Draw(matq);
+			/*Transform matq;
+			pQuad->Draw(matq);*/
 
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
