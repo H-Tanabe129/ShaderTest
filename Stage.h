@@ -5,15 +5,15 @@
 class Stage : public GameObject
 {
     //int hModel_;    //モデル番号
-    //int hSphere_;    //モデル番号
+    int hSphere_;    //モデル番号
     int hGround_;    //モデル番号
-    //int hArrow_;    //モデル番号
+    int hArrow_;    //モデル番号
 
-    //Transform ball;
+    Transform ball;
     Transform grou;
-    //Transform arrX;
-    //Transform arrY;
-    //Transform arrZ;
+    Transform arrX;
+    Transform arrY;
+    Transform arrZ;
 
 public:
     //コンストラクタ
