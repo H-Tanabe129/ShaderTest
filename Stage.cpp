@@ -19,7 +19,7 @@ void Stage::Initialize()
     //hModel_ = Model::Load("Assets/BoxDefault.fbx");
     //assert(hModel_ >= 0);
 
-    hSphere_ = Model::Load("Assets/Ball/testita.fbx");
+    hSphere_ = Model::Load("Assets/Ball/ball.fbx");
     assert(hSphere_ >= 0);
     ball.position_ = XMFLOAT3(0, 1.5f, 0);
     ball.scale_ = XMFLOAT3(3.0f, 3.0f, 3.0f);
