@@ -8,16 +8,15 @@ SamplerState	g_sampler : register(s0);	//サンプラー
  // コンスタントバッファ
 // DirectX 側から送信されてくる、ポリゴン頂点以外の諸情報の定義
 //───────────────────────────────────────
-cbuffer global
+cbuffer global:register(b0)
 {
 	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
 	float4x4	matW;			//ワールド行列
+	float4x4	matNormal;			//ワールド行列
 	float4		diffuseColor;	// ディフューズカラー（マテリアルの色）
-	float4		g_vecAmbient;		// アンビエントカラー（影の色）
-	float4		g_vecSpeculer;		// スペキュラーカラー（ハイライトの色）
-	float4		g_vecCameraPosition;// 視点（カメラの位置）
-	float		g_shuniness;		// ハイライトの強さ（テカリ具合）
-	bool		isTexture;		// テクスチャ貼ってあるかどうか
+	float4		lightPosition;	
+	float4		eyePosition;	
+	bool		isTextured;		// テクスチャ貼ってあるかどうか
 };
 
 //───────────────────────────────────────
@@ -26,10 +25,10 @@ cbuffer global
 struct VS_OUT
 {
 	float4 pos    : SV_POSITION;	//位置
-	float4 normal : TEXCOORD2;		//法線
 	float2 uv     : TEXCOORD;		//UV座標
-	float4 color	: COLOR;	//色（明るさ）
-	float4 eye	  : TEXCOORD1;		//視線
+	float4 color	: COLOR;		//色（明るさ）
+	float4 eyev	  : POSITION;		//視線
+	float4 normal : NORMAL;		//法線
 };
 
 //───────────────────────────────────────
@@ -38,7 +37,7 @@ struct VS_OUT
 VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	//ピクセルシェーダーへ渡す情報
-	VS_OUT outData;
+	VS_OUT outData = (VS_OUT)0;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
@@ -47,15 +46,12 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	//法線を回転
 	normal = mul(normal, matW);
+	normal.w = 0;
 	outData.normal = normal;		//これをピクセルシェーダーへ
-
-	//視線ベクトル（ハイライトの計算に必要
-	float4 worldPos = mul(pos, matW);					//ローカル座標にワールド行列をかけてワールド座標へ
-	outData.eye = normalize(g_vecCameraPosition - worldPos);	//視点から頂点位置を引き算し視線を求めてピクセルシェーダーへ
-
+	float4 posw
 	float4 light = float4(-1, 0.5, -0.7, 0);
 	light = normalize(light);
-	outData.color = clamp(dot(normal, light), 0, 1);
+	outData.color = saturate(dot(normal, light));
 
 
 	//まとめて出力
@@ -72,23 +68,18 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 diffuse;
 	float4 ambient;
 
-	if (isTexture == false)
+	if (isTextured == false)
 	{
 		diffuse = lightSource * diffuseColor * inData.color;
 		ambient = lightSource * diffuseColor * ambientSource;
 	}
 	else
 	{
-		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
+		diffuse = lightSource * diffuseColor(diffuse, inData.uv) * inData.color;
+		ambient = lightSource * diffuseColor(diffuse, inData.uv) * ambientSource;
 	}
 
 	float4 speculer = float4(0, 0, 0, 0);
-	if (g_vecSpeculer.a != 0)
-	{
-		float4 R = reflect(lightDir, inData.normal);    //正反射ベクトル
-		speculer = pow(saturate(dot(R, inData.eye)), g_shunienss) * g_vecSpeculer;    //ハイライトを求める
-	}
 
 	//float4 output = (diffuse + ambient) * inData.uv.x;
 	return (diffuse + ambient);
