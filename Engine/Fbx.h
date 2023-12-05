@@ -52,17 +52,20 @@ class Fbx
 	MATERIAL* pMaterialList_;
 	std::vector <int> indexCount_;
 	XMFLOAT4  lightSourcePosition_;
+	XMFLOAT4 dColor_;
 
 	void InitVertex(fbxsdk::FbxMesh* mesh);
 	void InitIndex(fbxsdk::FbxMesh* mesh);
 	void IntConstantBuffer();
 	void InitMaterial(fbxsdk::FbxNode* pNode);
-	void IsFlatColor();
+	bool IsFlatColor_;
 
 public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
 	void Draw(Transform& transform);
+	void SetLightPos(XMFLOAT4& cos);
+	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
 	void Release();
 };

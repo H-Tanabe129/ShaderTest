@@ -226,19 +226,14 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].pTexture_ = nullptr;
 
 			//マテリアルの色
-			//FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-			//FbxDouble3  diffuse = pMaterial->Diffuse;     //= XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f)
-			pMaterialList_[i].diffuse = dColor_;
-		}
+			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+			FbxDouble3  diffuse = pMaterial->Diffuse;     
+			pMaterialList_[i].diffuse = dColor_; 
+		}        //= XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f)
 	}
 
 
 }
-
-void Fbx::IsFlatColor()
-{
-}
-
 
 void Fbx::Draw(Transform& transform)
 {
@@ -291,6 +286,11 @@ void Fbx::Draw(Transform& transform)
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
+}
+
+void Fbx::SetLightPos(XMFLOAT4& cos)
+{
+	cos = lightSourcePosition_;
 }
 
 void Fbx::Release()
