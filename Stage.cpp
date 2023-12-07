@@ -1,5 +1,8 @@
 #include "Stage.h"
+#include "Engine/Fbx.h"
 #include "Engine/Model.h"
+#include "Engine/Input.h"
+#include "Engine/Camera.h"
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -21,8 +24,8 @@ void Stage::Initialize()
 
     hSphere_ = Model::Load("Assets/Ball/ball.fbx");
     assert(hSphere_ >= 0);
-    ball.position_ = XMFLOAT3(0, 1.5f, 0);
-    ball.scale_ = XMFLOAT3(3.0f, 3.0f, 3.0f);
+    ball.position_ = XMFLOAT3(2, 1.5f, -3);
+    ball.scale_ = XMFLOAT3(2.0f, 2.0f, 2.0f);
 
     hGround_ = Model::Load("Assets/ground.fbx");
     assert(hGround_ >= 0);
@@ -49,6 +52,53 @@ void Stage::Initialize()
 //更新
 void Stage::Update()
 {
+    ball.rotate_.y += 0.5f;
+
+
+    if(Input::IsKey(DIK_RIGHT))
+    {
+        XMFLOAT4 p = GetLightPos();
+        XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.1f, p.w + 0.0f };
+
+        //Model::GetModel(hModel_)->SetLightPos(margin);
+        SetLightPos(margin);
+    }
+    if(Input::IsKey(DIK_LEFT))
+    {
+        XMFLOAT4 p = GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.1f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
+
+        //Model::GetModel(hModel_)->SetLightPos(margin);
+        SetLightPos(margin);
+    }
+    if(Input::IsKey(DIK_UP))
+    {
+        XMFLOAT4 p = GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
+
+        //Model::GetModel(hModel_)->SetLightPos(margin);
+        SetLightPos(margin);
+    }
+    if(Input::IsKey(DIK_DOWN))
+    {
+        XMFLOAT4 p = GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
+
+        //Model::GetModel(hModel_)->SetLightPos(margin);
+        SetLightPos(margin);
+    }
+    XMFLOAT4 tmp{ GetLightPos() };
+    ball.position_ = { tmp.x, tmp.y, tmp.z };
+
+    CBUFF_STAGESCENE cb;
+    cb.lightPosition = lightSourcePosition_;
+    XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+
+    Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+
+    Direct3D::pContext->VSSetConstantBuffers(1, 1, &pCBStageScene_);  //頂点シェーダー
+    Direct3D::pContext->PSSetConstantBuffers(1, 1, &pCBStageScene_);  //ピクセルシェーダー
+
 }
 
 //描画

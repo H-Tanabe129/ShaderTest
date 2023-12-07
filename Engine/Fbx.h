@@ -25,10 +25,13 @@ class Fbx
 
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matWVP;
-		XMMATRIX	matNormal;
-		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
-		int		isTexture;		// テクスチャ貼ってあるかどうか
+		XMMATRIX	matWVP;				// ワールドビュープロジェクション
+		XMMATRIX	matW;				// ワールド変換のみ
+		XMMATRIX	matNormal;			// スケール×平行移動の逆行列
+		XMFLOAT4	diffuseColor;		// FBXからとってきた面の色（マテリアルの色）
+		XMFLOAT4	lightPosition;
+		XMFLOAT4	eyePos;
+		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
 	};
 
 	struct VERTEX
@@ -43,22 +46,26 @@ class Fbx
 	int polygonCount_;	//ポリゴン数
 	int materialCount_;	//マテリアルの個数
 
-
 	ID3D11Buffer* pVertexBuffer_;      //頂点バッファ
 	ID3D11Buffer** pIndexBuffer_;       //インデックスバッファ
 	ID3D11Buffer* pConstantBuffer_;    //コンスタントバッファ
 	MATERIAL* pMaterialList_;
 	std::vector <int> indexCount_;
+	XMFLOAT4  lightSourcePosition_;
+	XMFLOAT4 dColor_;
 
 	void InitVertex(fbxsdk::FbxMesh* mesh);
 	void InitIndex(fbxsdk::FbxMesh* mesh);
 	void IntConstantBuffer();
 	void InitMaterial(fbxsdk::FbxNode* pNode);
+	bool IsFlatColor_;
 
 public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
 	void Draw(Transform& transform);
+	void SetLightPos(XMFLOAT4& cos);
+	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
 	void Release();
 };

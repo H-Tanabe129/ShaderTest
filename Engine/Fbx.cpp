@@ -227,30 +227,31 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 			//マテリアルの色
 			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-			FbxDouble3  diffuse = pMaterial->Diffuse;
-			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
-		}
+			FbxDouble3  diffuse = pMaterial->Diffuse;     
+			pMaterialList_[i].diffuse = dColor_; 
+		}        //= XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f)
 	}
 
 
 }
 
-
 void Fbx::Draw(Transform& transform)
 {
 	Direct3D::SetShader(SHADER_3D);
-
 	transform.Calclation();
-	
-
 
 	for (int i = 0; i < materialCount_; i++)
 	{
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+		cb.matW = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
-		cb.isTexture = pMaterialList_[i].pTexture_ != nullptr;
+		cb.lightPosition = lightSourcePosition_;
+		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
+		//cb.isTextured = { n, n, n, n };
+		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
 
 		
 		
@@ -285,6 +286,11 @@ void Fbx::Draw(Transform& transform)
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
+}
+
+void Fbx::SetLightPos(XMFLOAT4& cos)
+{
+	cos = lightSourcePosition_;
 }
 
 void Fbx::Release()
