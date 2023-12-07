@@ -20,7 +20,10 @@ class Fbx
 	struct MATERIAL
 	{
 		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		XMFLOAT4	ambient;
 		XMFLOAT4	diffuse;
+		XMFLOAT4	specular;
+		static int 	shininess;
 	};
 
 	struct CONSTANT_BUFFER
@@ -53,6 +56,7 @@ class Fbx
 	std::vector <int> indexCount_;
 	XMFLOAT4  lightSourcePosition_;
 	XMFLOAT4 dColor_;
+	XMVECTOR position_;
 
 	void InitVertex(fbxsdk::FbxMesh* mesh);
 	void InitIndex(fbxsdk::FbxMesh* mesh);

@@ -226,10 +226,23 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].pTexture_ = nullptr;
 
 			//マテリアルの色
-			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-			FbxDouble3  diffuse = pMaterial->Diffuse;     
-			pMaterialList_[i].diffuse = dColor_; 
-		}        //= XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f)
+			//フォンシェーディングを想定したマテリアルバッファの抽出
+			FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+			FbxSurfacePhong* pPhong = (FbxSurfacePhong*)pMaterial;
+
+			//環境光＆拡散反射光＆鏡面反射光の反射成分値を取得
+			FbxDouble3  ambient = FbxDouble3(0, 0, 0);     
+			FbxDouble3  diffuse = FbxDouble3(0, 0, 0);
+			FbxDouble3  specular = FbxDouble3(0, 0, 0);
+			ambient = pPhong->Ambient;
+			diffuse = pPhong->Diffuse;
+
+			//環境光＆拡散反射光＆鏡面反射光の反射成分値をマテリアルバッファにコピー
+			pMaterialList_[i].ambient = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f); 
+			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f); 
+			pMaterialList_[i].specular = XMFLOAT4(0, 0, 0, 0); 
+			pMaterialList_[i].shininess = 0;         //= dColor_
+		}
 	}
 
 
@@ -248,7 +261,7 @@ void Fbx::Draw(Transform& transform)
 		cb.matW = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		cb.lightPosition = lightSourcePosition_;
-		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition(position_));
 		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
 		//cb.isTextured = { n, n, n, n };
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
