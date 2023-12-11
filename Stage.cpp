@@ -1,12 +1,32 @@
 #include "Stage.h"
-#include "Engine/Fbx.h"
 #include "Engine/Model.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
+//#include "axisClass.h"
+
+void Stage::IntConstantBuffer()
+{
+    D3D11_BUFFER_DESC cb;
+    cb.ByteWidth = sizeof(CBUFF_STAGESCENE);
+    cb.Usage = D3D11_USAGE_DEFAULT;
+    cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cb.CPUAccessFlags = 0;
+    cb.MiscFlags = 0;
+    cb.StructureByteStride = 0;
+
+    // コンスタントバッファの作成
+    HRESULT hr;
+    hr = Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_);
+    if (FAILED(hr))
+    {
+        MessageBox(NULL, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+    }
+
+}
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage")/*, hModel_(-1)*/, hSphere_(-1), hGround_(-1), hArrow_(-1)
+    :GameObject(parent, "Stage")/*, hModel_(-1)*/, hSphere_(-1), hGround_(-1), hArrow_(-1),lightSourcePosition_(DEF_LIGHT_POSITION)
 {
 }
 
@@ -47,6 +67,10 @@ void Stage::Initialize()
     arrZ.position_ = XMFLOAT3(0, 1, -1.5f);
     arrZ.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
     arrZ.rotate_.y = 90;
+
+    //Instantiate<axisClass>(this);
+    IntConstantBuffer();
+
 }
 
 //更新
