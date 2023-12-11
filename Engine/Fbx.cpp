@@ -241,7 +241,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].ambient = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f); 
 			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f); 
 			pMaterialList_[i].specular = XMFLOAT4(0, 0, 0, 0); 
-			pMaterialList_[i].shininess = 0;         //= dColor_
+			//pMaterialList_[i].shininess = 0;         //= dColor_
 		}
 	}
 
@@ -261,7 +261,7 @@ void Fbx::Draw(Transform& transform)
 		cb.matW = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		cb.lightPosition = lightSourcePosition_;
-		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition(position_));
+		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition(position_));
 		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
 		//cb.isTextured = { n, n, n, n };
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;

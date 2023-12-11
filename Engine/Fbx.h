@@ -23,7 +23,7 @@ class Fbx
 		XMFLOAT4	ambient;
 		XMFLOAT4	diffuse;
 		XMFLOAT4	specular;
-		static int 	shininess;
+		//static int 	shininess;
 	};
 
 	struct CONSTANT_BUFFER

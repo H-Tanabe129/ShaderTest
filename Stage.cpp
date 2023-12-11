@@ -55,49 +55,49 @@ void Stage::Update()
     ball.rotate_.y += 0.5f;
 
 
-    if(Input::IsKey(DIK_RIGHT))
-    {
-        XMFLOAT4 p = GetLightPos();
-        XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.1f, p.w + 0.0f };
+    //if(Input::IsKey(DIK_RIGHT))
+    //{
+    //    XMFLOAT4 p = GetLightPos();
+    //    XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.1f, p.w + 0.0f };
 
-        //Model::GetModel(hModel_)->SetLightPos(margin);
-        SetLightPos(margin);
-    }
-    if(Input::IsKey(DIK_LEFT))
-    {
-        XMFLOAT4 p = GetLightPos();
-        XMFLOAT4 margin{ p.x - 0.1f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
+    //    //Model::GetModel(hModel_)->SetLightPos(margin);
+    //    SetLightPos(margin);
+    //}
+    //if(Input::IsKey(DIK_LEFT))
+    //{
+    //    XMFLOAT4 p = GetLightPos();
+    //    XMFLOAT4 margin{ p.x - 0.1f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
 
-        //Model::GetModel(hModel_)->SetLightPos(margin);
-        SetLightPos(margin);
-    }
-    if(Input::IsKey(DIK_UP))
-    {
-        XMFLOAT4 p = GetLightPos();
-        XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
+    //    //Model::GetModel(hModel_)->SetLightPos(margin);
+    //    SetLightPos(margin);
+    //}
+    //if(Input::IsKey(DIK_UP))
+    //{
+    //    XMFLOAT4 p = GetLightPos();
+    //    XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
 
-        //Model::GetModel(hModel_)->SetLightPos(margin);
-        SetLightPos(margin);
-    }
-    if(Input::IsKey(DIK_DOWN))
-    {
-        XMFLOAT4 p = GetLightPos();
-        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
+    //    //Model::GetModel(hModel_)->SetLightPos(margin);
+    //    SetLightPos(margin);
+    //}
+    //if(Input::IsKey(DIK_DOWN))
+    //{
+    //    XMFLOAT4 p = GetLightPos();
+    //    XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
 
-        //Model::GetModel(hModel_)->SetLightPos(margin);
-        SetLightPos(margin);
-    }
-    XMFLOAT4 tmp{ GetLightPos() };
-    ball.position_ = { tmp.x, tmp.y, tmp.z };
+    //    //Model::GetModel(hModel_)->SetLightPos(margin);
+    //    SetLightPos(margin);
+    //}
+    //XMFLOAT4 tmp{ GetLightPos() };
+    //ball.position_ = { tmp.x, tmp.y, tmp.z };
 
-    CBUFF_STAGESCENE cb;
-    cb.lightPosition = lightSourcePosition_;
-    XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+    //CBUFF_STAGESCENE cb;
+    //cb.lightPosition = lightSourcePosition_;
+    ////XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 
-    Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+    //Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
 
-    Direct3D::pContext->VSSetConstantBuffers(1, 1, &pCBStageScene_);  //頂点シェーダー
-    Direct3D::pContext->PSSetConstantBuffers(1, 1, &pCBStageScene_);  //ピクセルシェーダー
+    //Direct3D::pContext->VSSetConstantBuffers(1, 1, &pCBStageScene_);  //頂点シェーダー
+    //Direct3D::pContext->PSSetConstantBuffers(1, 1, &pCBStageScene_);  //ピクセルシェーダー
 
 }
 
