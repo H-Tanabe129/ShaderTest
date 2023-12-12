@@ -78,6 +78,6 @@ public:
 	void	SetRenderingShader(RENDER_STATE _state) { state_ = _state; }
 	void Release();
 
-	void SetLightPos(XMFLOAT4& cos);
-	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
+	//void SetLightPos(XMFLOAT4& cos);
+	//XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
 };
