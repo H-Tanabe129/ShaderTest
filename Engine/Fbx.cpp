@@ -1,8 +1,12 @@
-﻿#include "Fbx.h"
+﻿#include <assert.h>
+#include "Fbx.h"
+#include "Direct3D.h"
 #include "Camera.h"
 #include "Texture.h"
-#include <assert.h>
+using namespace DirectX;
+using namespace Camera;
 
+const XMFLOAT4 LIGHT_POSITION{ 1, 2, 1, 0 };
 
 Fbx::Fbx():
 	vertexCount_(0),polygonCount_(0),materialCount_(0),pVertexBuffer_(nullptr),pIndexBuffer_(0),pConstantBuffer_(nullptr),pMaterialList_(nullptr)
@@ -196,6 +200,14 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 	{
 		//i番目のマテリアル情報を取得
 		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+		//FbxDouble3 diffuse = pMaterial->sDiffuse;
+		////diffuse[0], diffuse[1], diffuse[2]
+		//FbxDouble3 ambient = pMaterial->sAmbient;  //XMFLOAT4
+
+		//if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId)) {
+		//	FbxDouble3 specular = pMaterial->sSpecular;
+		//	FbxDouble3 shiness = pMaterial->Shininess;
+		//}
 
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
@@ -255,24 +267,27 @@ void Fbx::Draw(Transform& transform)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
-		CONSTANT_BUFFER cb;
-		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
-		cb.matW = XMMatrixTranspose(transform.GetNormalMatrix());
-		cb.diffuseColor = pMaterialList_[i].diffuse;
-		cb.lightPosition = lightSourcePosition_;
-		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition(position_));
-		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
-		//cb.isTextured = { n, n, n, n };
-		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
+		if (state_ == RENDER_DIRLIGHT)
+		{
+
+			CONSTANT_BUFFER cb;
+			cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+			cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+			cb.matW = XMMatrixTranspose(transform.GetNormalMatrix());
+			cb.diffuseColor = pMaterialList_[i].diffuse;
+			//cb.lightPosition = lightSourcePosition_;
+			//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition(position_));
+			//int n = (int)(pMaterialList_[i].pTexture != nullptr);
+			//cb.isTextured = { n, n, n, n };
+			cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
+		}
 
 		
 		
-		D3D11_MAPPED_SUBRESOURCE pdata;
-		Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-		memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-
-		Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+		//D3D11_MAPPED_SUBRESOURCE pdata;
+		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 
 		//頂点バッファ
 		UINT stride = sizeof(VERTEX);

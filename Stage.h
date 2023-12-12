@@ -12,7 +12,7 @@ struct CBUFF_STAGESCENE
 //◆◆◆を管理するクラス
 class Stage : public GameObject
 {
-    //int hModel_;    //モデル番号
+    int hModel_;    //モデル番号
     int hSphere_;    //モデル番号
     int hGround_;    //モデル番号
     int hArrow_;    //モデル番号
@@ -22,8 +22,10 @@ class Stage : public GameObject
     Transform arrX;
     Transform arrY;
     Transform arrZ;
+    Transform trLightBall;
 
     ID3D11Buffer* pCBStageScene_;
+    void IntConstantBuffer();
     XMFLOAT4 lightSourcePosition_;
 
 public:

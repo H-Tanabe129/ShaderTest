@@ -5,13 +5,19 @@
 #include <string>
 #include <vector>
 #include "Transform.h"
-#include "Direct3D.h"
 
 
 #pragma comment(lib, "LibFbxSDK-MD.lib")
 #pragma comment(lib, "LibXml2-MD.lib")
 #pragma comment(lib, "zlib-MD.lib")
 
+using std::vector;
+
+enum RENDER_STATE
+{
+	RENDER_DIRLIGHT,
+	RENDER_PNTLIGHT,
+};
 class Texture;  //前方宣言
 
 class Fbx
@@ -62,14 +68,16 @@ class Fbx
 	void InitIndex(fbxsdk::FbxMesh* mesh);
 	void IntConstantBuffer();
 	void InitMaterial(fbxsdk::FbxNode* pNode);
-	bool IsFlatColor_;
+	RENDER_STATE state_;
 
 public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
 	void Draw(Transform& transform);
+	void	SetRenderingShader(RENDER_STATE _state) { state_ = _state; }
+	void Release();
+
 	void SetLightPos(XMFLOAT4& cos);
 	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
-	void Release();
 };

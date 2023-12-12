@@ -2,19 +2,23 @@
 #include <string>
 #include <vector>
 #include "Fbx.h"
-#include "Transform.h"
 
 //-----------------------------------------------------------
 //3Dモデル（FBXファイル）を管理する
 //-----------------------------------------------------------
 namespace Model
 {
-	//読み込み
+	//struct ModelData
+	//{
+	//	Fbx* pfbx_;
+	//	Transform transform_;//トランスフォーム
+	//	std::string filename_;
+	//};
 	int Load(std::string fileName);
 	void SetTransform(int hModel, Transform transform);
-	//描画
+	Fbx* GetModel(int _hModel);
 	void Draw(int hModel);
-	//解放
 	void Release();
+	void ToggleRenderState();
 
 };
