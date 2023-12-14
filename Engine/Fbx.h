@@ -26,8 +26,8 @@ class Fbx
 	struct MATERIAL
 	{
 		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
-		XMFLOAT4	ambient;
 		XMFLOAT4	diffuse;
+		XMFLOAT4	ambient;
 		XMFLOAT4	specular;
 		//static int 	shininess;
 	};
@@ -38,6 +38,8 @@ class Fbx
 		XMMATRIX	matW;				// ワールド変換のみ
 		XMMATRIX	matNormal;			// スケール×平行移動の逆行列
 		XMFLOAT4	diffuseColor;		// FBXからとってきた面の色（マテリアルの色）
+		XMFLOAT4	ambientColor;		// 
+		XMFLOAT4	specularColor;		// 
 		XMFLOAT4	lightPosition;
 		XMFLOAT4	eyePos;
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか

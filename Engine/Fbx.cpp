@@ -198,6 +198,22 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		//i番目のマテリアル情報を取得
 		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
 
+		FbxSurfaceMaterial* pPhong = pNode->GetMaterial(i);
+
+		FbxDouble3 diffuse = pPhong->Diffuse;
+		FbxDouble3 ambient = pPhong->Ambient;
+		FbxDouble3 specular = pPhong->Specular;
+
+		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0);
+		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0);
+
+		if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+		{
+			//Mayaで設定したSpecularなら
+			FbxDouble3 specular = pMaterial->Specular;
+			pMaterialList_[i].specular = XMFLOAT4(0,0,0,0);
+		}
+
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
