@@ -39,7 +39,7 @@ HRESULT Fbx::Load(std::string fileName)
 	//各情報の個数を取得
 	vertexCount_ = mesh->GetControlPointsCount();	//頂点の数
 	polygonCount_ = mesh->GetPolygonCount();	//ポリゴンの数
-	materialCount_ = pNode->GetMaterialCount();
+	materialCount_ = pNode->GetMaterialCount();//メッシュに含まれるマテリアル数
 
 	//現在のカレントディレクトリを取得
 	char defaultCurrentDir[MAX_PATH];
@@ -58,6 +58,7 @@ HRESULT Fbx::Load(std::string fileName)
 
 	//カレントディレクトリを元に戻す
 	SetCurrentDirectory(defaultCurrentDir);
+
 
 	//マネージャ解放
 	pFbxManager->Destroy();
@@ -200,23 +201,29 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 		FbxSurfacePhong* pPhong = (FbxSurfacePhong*)pMaterial;
 
-		FbxDouble3 diffuse = pPhong->Diffuse;
-		FbxDouble3 ambient = pPhong->Ambient;
-		FbxDouble3 specular = pPhong->Specular;
 
-		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0);
-		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0);
+		FbxDouble3  diffuse = pPhong->Diffuse;
+		FbxDouble3  ambient = pPhong->Ambient;
+
+
+		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
 		pMaterialList_[i].specular = XMFLOAT4(0, 0, 0, 0);	//とりあえずハイライトは黒
 		pMaterialList_[i].shininess = 1;
 
+		//Mayaで指定したのがフォンシェーダーだったら
 		if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
-		{			//Mayaで指定したSpecularColorの情報
+		{
+			//Mayaで指定したSpecularColorの情報
 			FbxDouble3  specular = pPhong->Specular;
 			pMaterialList_[i].specular = XMFLOAT4((float)specular[0], (float)specular[1], (float)specular[2], 1.0f);
 
 			FbxDouble shininess = pPhong->Shininess;
 			pMaterialList_[i].shininess = (float)shininess;
 		}
+
+
+
 
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
@@ -246,9 +253,6 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		{
 			pMaterialList_[i].pTexture_ = nullptr;
 			//マテリアルの色
-			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-			FbxDouble3  diffuse = pMaterial->Diffuse;
-			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
 		}
 	}
 }
@@ -264,7 +268,8 @@ void Fbx::Draw(Transform& transform)
 
 
 	for (int i = 0; i < materialCount_; i++)
-	{		//コンスタントバッファに情報を渡す
+	{
+		//コンスタントバッファに情報を渡す
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
@@ -278,26 +283,35 @@ void Fbx::Draw(Transform& transform)
 
 		//cb.lightPosition = lightSourcePosition_;
 		//XMStoreFloat4(&cb.eyePos,Camera::GetEyePosition());
-		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
+		//int n = (int)(pMaterialList_[i].pTexture_ != nullptr);
 		//cb.isTextured = { n,n,n,n };
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
+
+
 		//D3D11_MAPPED_SUBRESOURCE pdata;
 		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+
 		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
 		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
+
 		//頂点バッファ、インデックスバッファ、コンスタントバッファをパイプラインにセット
 		//頂点バッファ
 		UINT stride = sizeof(VERTEX);
 		UINT offset = 0;
 		Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+
+
 		// インデックスバッファーをセット
 		stride = sizeof(int);
 		offset = 0;
 		Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_[i], DXGI_FORMAT_R32_UINT, 0);
+
 		//コンスタントバッファ
 		Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 		Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
+
 
 		if (pMaterialList_[i].pTexture_)
 		{
@@ -307,6 +321,7 @@ void Fbx::Draw(Transform& transform)
 			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
 			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 		}
+
 
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
