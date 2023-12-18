@@ -29,7 +29,7 @@ void Stage::IntConstantBuffer()
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hModel_(-1), hSphere_(-1), hGround_(-1), hArrow_(-1),lightSourcePosition_(DEF_LIGHT_POSITION)
+    :GameObject(parent, "Stage"), hModel_(-1), hSphere_(-1), hGround_(-1), hArrow_(-1), hLightBall_(-1),lightSourcePosition_(DEF_LIGHT_POSITION)
 {
 }
 
@@ -48,11 +48,11 @@ void Stage::Initialize()
     hModel_ = Model::Load("Assets/Donuts.fbx");
     assert(hModel_ >= 0);
 
-    hSphere_ = Model::Load("Assets/Ball/ball.fbx");
-    assert(hSphere_ >= 0);
-    //ball.position_ = XMFLOAT3(2, 1.5f, -3);
+    //hSphere_ = Model::Load("Assets/Ball/ball.fbx");
+    //assert(hSphere_ >= 0);
+    ////ball.position_ = XMFLOAT3(2, 1.5f, -3);
+    ////ball.scale_ = XMFLOAT3(2.0f, 2.0f, 2.0f);
     //ball.scale_ = XMFLOAT3(2.0f, 2.0f, 2.0f);
-    trLightBall.scale_ = { 0.4, 0.4, 0.4 };
 
     //hGround_ = Model::Load("Assets/ground.fbx");
     //assert(hGround_ >= 0);
@@ -75,6 +75,12 @@ void Stage::Initialize()
     arrZ.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
     arrZ.rotate_.y = 90;
 
+    hLightBall_ = Model::Load("assets/RedBall.fbx");
+    assert(hLightBall_ >= 0);
+    trLightBall.position_ = { 0, 0, 0 };
+    trLightBall.rotate_ = { 0, 0, 0 };
+    trLightBall.scale_ = { 0.4, 0.4, 0.4 };
+
     IntConstantBuffer();
 
 }
@@ -83,13 +89,12 @@ void Stage::Initialize()
 void Stage::Update()
 {
     //ball.rotate_.y += 0.5f;
-
     if (Input::IsKeyUp(DIK_SPACE))
     {
         Model::ToggleRenderState();
     }
     //transform_.rotate_.y += 0.5f;
-     //trDonuts.rotate_.y += 0.5f;
+    // trDonuts.rotate_.y += 0.5f;
     if (Input::IsKey(DIK_RIGHT))
     {
         XMFLOAT4 p = GetLightPos();
@@ -139,7 +144,7 @@ void Stage::Update()
         SetLightPos(margin);
     }
     XMFLOAT4 tmp{ GetLightPos() };
-    ball.position_ = { tmp.x, tmp.y,tmp.z };
+    trLightBall.position_ = { tmp.x, tmp.y,tmp.z };
 
     CBUFF_STAGESCENE cb;
     cb.lightPosition = lightSourcePosition_;
@@ -147,7 +152,7 @@ void Stage::Update()
 
     Direct3D::pContext_->UpdateSubresource(pCBStageScene_,
         0, NULL, &cb, 0, 0);
-    
+
     Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_);	//頂点シェーダー用	
     Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_);	//ピクセルシェーダー用
 
@@ -158,8 +163,8 @@ void Stage::Draw()
 {
     Model::SetTransform(hModel_, transform_);
     Model::Draw(hModel_);
-    Model::SetTransform(hSphere_, trLightBall);
-    Model::Draw(hSphere_);
+    Model::SetTransform(hLightBall_, trLightBall);
+    Model::Draw(hLightBall_);
     //Model::SetTransform(hSphere_, ball);
     //Model::Draw(hSphere_);
     //Model::SetTransform(hGround_, grou);

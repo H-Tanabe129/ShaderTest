@@ -16,6 +16,7 @@ class Stage : public GameObject
     int hSphere_;    //モデル番号
     int hGround_;    //モデル番号
     int hArrow_;    //モデル番号
+    int hLightBall_;    //モデル番号
 
     Transform ball;
     Transform grou;
