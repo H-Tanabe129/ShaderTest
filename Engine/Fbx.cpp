@@ -59,7 +59,6 @@ HRESULT Fbx::Load(std::string fileName)
 	//カレントディレクトリを元に戻す
 	SetCurrentDirectory(defaultCurrentDir);
 
-
 	//マネージャ解放
 	pFbxManager->Destroy();
 	return S_OK;
@@ -222,9 +221,6 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].shininess = (float)shininess;
 		}
 
-
-
-
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
@@ -268,8 +264,7 @@ void Fbx::Draw(Transform& transform)
 
 
 	for (int i = 0; i < materialCount_; i++)
-	{
-		//コンスタントバッファに情報を渡す
+	{		//コンスタントバッファに情報を渡す
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
@@ -283,7 +278,7 @@ void Fbx::Draw(Transform& transform)
 
 		//cb.lightPosition = lightSourcePosition_;
 		//XMStoreFloat4(&cb.eyePos,Camera::GetEyePosition());
-		//int n = (int)(pMaterialList_[i].pTexture_ != nullptr);
+		//int n = (int)(pMaterialList_[i].pTexture != nullptr);
 		//cb.isTextured = { n,n,n,n };
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
 
@@ -321,7 +316,6 @@ void Fbx::Draw(Transform& transform)
 			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
 			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 		}
-
 
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
