@@ -4,7 +4,7 @@
 Texture2D		g_texture : register(t0);	//テクスチャー
 SamplerState	g_sampler : register(s0);	//サンプラー
 
-Texture2D		g_toonTexture : register(t1);
+Texture2D		g_toon_texture : register(t1);
 
 //───────────────────────────────────────
 // コンスタントバッファ
@@ -83,15 +83,25 @@ float4 PS(VS_OUT inData) : SV_Target
 	//float4 reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));
 	float4 reflection = reflect(normalize(-lightPosition), inData.normal);
 	float4 specular = pow(saturate(dot(reflection, normalize(inData.eyev))), shininess) * specularColor;
+
+	float2 uv;
+
+	uv.x = inData.color.x;
+	uv.y = 0;
+
+
+	float4 tI = g_toon_texture.Sample(g_sampler, uv);
+
+
 	//この辺で拡散反射の値をごにょごにょする
 	//トゥーンシェーダ
-	float4 n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
-	float4 n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
-	float4 n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
-	float4 n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
+	//float4 n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
+	//float4 n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
+	//float4 n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
+	//float4 n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
 
-	float4 tI = 0.1 * step(n1, inData.color) + 0.3 * step(n2, inData.color)
-			  + 0.3 * step(n3, inData.color) + 0.4 * step(n4, inData.color);
+	//float4 tI = 0.1 * step(n1, inData.color) + 0.3 * step(n2, inData.color)
+	//		  + 0.3 * step(n3, inData.color) + 0.4 * step(n4, inData.color);
 
 	if (isTextured == 0)
 	{
@@ -103,8 +113,13 @@ float4 PS(VS_OUT inData) : SV_Target
 		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
-	//return diffuse + ambient + specular; //
-	return tI;
+	//return diffuse + ambient; // + specular
+	////return tI;
+	
+	if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.2)  // 輪郭 = 視線ベクトルと面の法線の角度が90度付近
+		return float4(0, 0, 0, 0);
+	else
+		return float4(1, 1, 1, 0);
 
-	//return g_texture.Sample(g_sampler, inData.uv);
+	////return g_texture.Sample(g_sampler, inData.uv);
 }
