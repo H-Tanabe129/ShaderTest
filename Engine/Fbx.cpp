@@ -320,6 +320,8 @@ void Fbx::Draw(Transform& transform)
 			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 		}
 
+		ID3D11ShaderResourceView* pSRVToon = pToonTex_ ->
+
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
