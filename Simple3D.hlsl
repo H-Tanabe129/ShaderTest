@@ -82,6 +82,7 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 reflection = reflect(normalize(-lightPosition), inData.normal);
 	float4 specular = pow(saturate(dot(reflection, normalize(inData.eyev))), shininess) * specularColor;
 	//この辺で拡散反射の値をごにょごにょする
+	//トゥーンシェーダ
 	/*float4 n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
 	float4 n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
 	float4 n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
