@@ -51,8 +51,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	//ピクセルシェーダーへ渡す情報
 	VS_OUT outData = (VS_OUT)0;
 
-	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
-	//スクリーン座標に変換し、ピクセルシェーダーへ
+	pos = pos + normal * 0.5;
 	outData.pos = mul(pos, matWVP);
 	outData.uv = uv;
 	normal.w = 0;
@@ -113,13 +112,13 @@ float4 PS(VS_OUT inData) : SV_Target
 		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
-	//return diffuse + ambient; // + specular
+	return diffuse + ambient; // + specular
 	////return tI;
-	
-	if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.2)  // 輪郭 = 視線ベクトルと面の法線の角度が90度付近
-		return float4(0, 0, 0, 0);
-	else
-		return float4(1, 1, 1, 0);
+
+	//if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.2)  // 輪郭 = 視線ベクトルと面の法線の角度が90度付近
+	//	return float4(0, 0, 0, 0);
+	//else
+	//	return float4(1, 1, 1, 0);
 
 	////return g_texture.Sample(g_sampler, inData.uv);
 }
