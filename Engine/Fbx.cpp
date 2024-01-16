@@ -61,8 +61,8 @@ HRESULT Fbx::Load(std::string fileName)
 
 	//マネージャ解放
 	pFbxManager->Destroy();
-	pToonTex_ = new Texture;
-	pToonTex_->Load("Assets/toon.png");
+	//pToonTex_ = new Texture;
+	//pToonTex_->Load("Assets/toon.png");
 
 	return S_OK;
 }
@@ -96,8 +96,38 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 			FbxVector4 Normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
 			vertices[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
+
+
 		}
 	}
+
+	//接線
+	for (int i = 0; i < polygonCount_; i++) {
+		mesh->GetElementTangentCount();  //これが0
+		int sIndex = mesh->GetPolygonVertexIndex(i);
+
+		//
+		FbxGeometryElementTangent* t = mesh->GetElementTangent(0);
+
+		if (t) {
+			//XYZW
+			FbxVector4 tangent = t->GetDirectArray().GetAt(sIndex).mData;
+
+			for (int j = 0; j < 3; j++) {
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+				vertices[index].tangent
+					= { (float)tangent[0], (float)tangent[1], (float)tangent[2], (float)tangent[3] };
+			}
+		}
+		else {
+			for (int j = 0; j < 3; j++) {
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+				vertices[index].tangent
+					= { 0.0f, 0.0f, 0.0f, 0.0f };
+			}
+		}
+	}
+
 
 	//頂点バッファ
 	HRESULT hr;
