@@ -26,6 +26,7 @@ class Fbx
 	struct MATERIAL
 	{
 		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture*    pNormalmap_; 
 		XMFLOAT4	diffuse;
 		XMFLOAT4	ambient;
 		XMFLOAT4	specular;
@@ -42,6 +43,7 @@ class Fbx
 		XMFLOAT4	specularColor;		// 
 		FLOAT		shiness;
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
+		BOOL		isNormalMap;
 
 		XMFLOAT4	lightPosition;
 		XMFLOAT4	eyePos;
