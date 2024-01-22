@@ -25,8 +25,8 @@ class Fbx
 	//マテリアル
 	struct MATERIAL
 	{
-		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
-		Texture*    pNormalmap_; 
+		Texture*    pTexture; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture*    pNormalmap; 
 		XMFLOAT4	diffuse;
 		XMFLOAT4	ambient;
 		XMFLOAT4	specular;
@@ -41,7 +41,7 @@ class Fbx
 		XMFLOAT4	diffuseColor;		// FBXからとってきた面の色（マテリアルの色）
 		XMFLOAT4	ambientColor;		// 
 		XMFLOAT4	specularColor;		// 
-		FLOAT		shiness;
+		FLOAT		shininess;
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
 		BOOL		isNormalMap;
 
@@ -51,10 +51,10 @@ class Fbx
 
 	struct VERTEX
 	{
-		XMVECTOR position;
-		XMVECTOR uv;
-		XMVECTOR normal;
-		XMVECTOR tangent;
+		XMVECTOR position;	//位置
+		XMVECTOR uv;		//テクスチャ座標
+		XMVECTOR normal;	//法線ベクトル
+		XMVECTOR tangent;	//接線ベクトル
 	};
 
 

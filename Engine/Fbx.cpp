@@ -263,14 +263,14 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			wsprintf(name, "%s%s", name, ext);
 
 			//ファイルからテクスチャ作成
-			pMaterialList_[i].pNormalmap_ = new Texture;
-			HRESULT hr = pMaterialList_[i].pNormalmap_->Load(name);
+			pMaterialList_[i].pNormalmap = new Texture;
+			HRESULT hr = pMaterialList_[i].pNormalmap->Load(name);
 			assert(hr == S_OK);
 		}
 		//テクスチャ無し
 		else
 		{
-			pMaterialList_[i].pNormalmap_ = nullptr;
+			pMaterialList_[i].pNormalmap = nullptr;
 			//マテリアルの色
 		}
 	}
@@ -297,10 +297,10 @@ void Fbx::Draw(Transform& transform)
 			cb.diffuseColor = pMaterialList_[i].diffuse;
 			cb.ambientColor = pMaterialList_[i].ambient;
 			cb.specularColor = pMaterialList_[i].specular;
-			cb.shiness = pMaterialList_[i].shininess;
+			cb.shininess = pMaterialList_[i].shininess;
 
-			cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
-			cb.isNormalMap = pMaterialList_[i].pNormalmap_ != nullptr;
+			cb.isTextured = pMaterialList_[i].pTexture != nullptr;
+			cb.isNormalMap = pMaterialList_[i].pNormalmap != nullptr;
 
 
 			Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
@@ -322,19 +322,19 @@ void Fbx::Draw(Transform& transform)
 			Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
 
-			if (pMaterialList_[i].pTexture_)
+			if (pMaterialList_[i].pTexture)
 			{
-				ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture_->GetSampler();
+				ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture->GetSampler();
 				Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
 
-				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
+				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
 				Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 			}
 			
-			if (pMaterialList_[i].pNormalmap_)
+			if (pMaterialList_[i].pNormalmap)
 			{
-				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalmap_->GetSRV();
-				Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalmap->GetSRV();
+				Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRV);
 			}
 
 		//描画
