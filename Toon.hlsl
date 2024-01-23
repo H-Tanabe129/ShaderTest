@@ -51,8 +51,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	//ピクセルシェーダーへ渡す情報
 	VS_OUT outData = (VS_OUT)0;
 
-	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
-	//スクリーン座標に変換し、ピクセルシェーダーへ
 	outData.pos = mul(pos, matWVP);
 	outData.uv = uv;
 	normal.w = 0;
@@ -92,17 +90,6 @@ float4 PS(VS_OUT inData) : SV_Target
 
 	float4 tI = g_toon_texture.Sample(g_sampler, uv);
 
-
-	//この辺で拡散反射の値をごにょごにょする
-	//トゥーンシェーダ
-	//float4 n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
-	//float4 n2 = float4/ 4.0, 2 / 4.0, 2 / 4.0, 1);
-	//float4 n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
-	//float4 n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
-
-	//float4 tI = 0.1 * step(n1, inData.color) + 0.3 * step(n2, inData.color)
-	//		  + 0.3 * step(n3, inData.color) + 0.4 * step(n4, inData.color);
-
 	if (isTextured == 0)
 	{
 		diffuse = lightSource * diffuseColor * tI;
@@ -113,13 +100,13 @@ float4 PS(VS_OUT inData) : SV_Target
 		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
-	//return diffuse + ambient; // + specular
+	return diffuse + ambient + specular; //
 	////return tI;
-	
-	if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.2)  // 輪郭 = 視線ベクトルと面の法線の角度が90度付近
-		return float4(0, 0, 0, 0);
-	else
-		return float4(1, 1, 1, 0);
+
+	//if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.2)  // 輪郭 = 視線ベクトルと面の法線の角度が90度付近
+	//	return float4(0, 0, 0, 0);
+	//else
+	//	return float4(1, 1, 1, 0);
 
 	////return g_texture.Sample(g_sampler, inData.uv);
 }
