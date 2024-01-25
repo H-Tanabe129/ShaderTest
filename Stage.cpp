@@ -45,7 +45,7 @@ void Stage::Initialize()
     Camera::SetTarget(XMVECTOR{ 0, 2, 0, 0 });
 
     //モデルデータのロード
-    hModel_ = Model::Load("Assets/Donuts.fbx");
+    hModel_ = Model::Load("Assets/Ball.fbx");
     assert(hModel_ >= 0);
 
     //hSphere_ = Model::Load("Assets/Ball/ball.fbx");
