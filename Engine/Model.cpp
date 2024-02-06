@@ -4,13 +4,14 @@
 namespace Model
 {
 	//モデル情報
-	struct ModelData
-	{
-		//FBX名
-		Fbx* pfbx_;
-		Transform transform_; //トランスフォーム
-		std::string filename_; //ファイル名
-	};
+	//struct ModelData
+	//{
+	//	//FBX名
+	//	Fbx* pfbx_;
+	//	Transform transform_; //トランスフォーム
+	//	std::string filename_; //ファイル名
+	//};
+	
 	//モデルのポインタをぶち込んでおくベクタ
 	std::vector<ModelData*>modelList;
 	RENDER_STATE state_;

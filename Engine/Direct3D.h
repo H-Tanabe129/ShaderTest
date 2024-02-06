@@ -1,14 +1,15 @@
 #pragma once
 #include <d3d11.h>
-#include <cassert>  //c++版の<assert.h>
 #include<DirectXMath.h>
+
+#define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
+#define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-#define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
-#define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
+using namespace DirectX;
 
 enum SHADER_TYPE
 {
@@ -50,5 +51,10 @@ namespace Direct3D
 
 	//解放
 	void Release();
+
+	//Zバッファへの書き込みON/OFF
+	//引数：isWrite	  true=書き込みON／false=書き込みOFF
+	void SetDepthBafferWriteEnable(bool isWrite);
+	extern SIZE screenSize;
 
 };
