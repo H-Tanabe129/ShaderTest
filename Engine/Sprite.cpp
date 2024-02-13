@@ -60,6 +60,9 @@ void Sprite::Draw(Transform& transform)
 
 void Sprite::Draw(Transform& transform, RECT rect, float alpha)
 {
+	static float scroll = 0.0f;
+	scroll += 0.001f;
+
 	//いろいろ設定
 	Direct3D::SetShader(SHADER_TYPE::SHADER_2D);
 	UINT stride = sizeof(VERTEX);
@@ -94,6 +97,8 @@ void Sprite::Draw(Transform& transform, RECT rect, float alpha)
 	cb.uvTrans = XMMatrixTranspose(mTexel);
 
 	cb.color = XMFLOAT4(1, 1, 1, alpha);
+
+	cb.scroll = scroll;
 
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのリソースアクセスを一時止める
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));		// リソースへ値を送る
@@ -146,6 +151,20 @@ void Sprite::InitVertexData()
 	//メンバ変数へコピー
 	//vertices_ = new VERTEX[vertexNum_];				//必要なサイズの配列にして
 	//memcpy(vertices_, vertices, sizeof(vertices));	//コピー
+
+
+	//ついでに頂点バッファ作る
+	HRESULT hr;
+	D3D11_BUFFER_DESC bd_vertex;
+	bd_vertex.ByteWidth = (unsigned int)(sizeof(VERTEX) * vertexNum_);
+	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
+	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd_vertex.CPUAccessFlags = 0;
+	bd_vertex.MiscFlags = 0;
+	bd_vertex.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA data_vertex;
+	data_vertex.pSysMem = vertices_.data();
+	Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 }
 
 //インデックス情報を準備
@@ -154,16 +173,19 @@ void Sprite::InitIndexData()
 	index_ = { 2,1,0,2,3,1 };
 	//インデックス数
 	indexNum = index_.size();
+
 	D3D11_BUFFER_DESC   bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = (unsigned int)(sizeof(int) * indexNum);
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
+
 	D3D11_SUBRESOURCE_DATA InitData;
 	InitData.pSysMem = index_.data();
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
+	
 	HRESULT hr;
 	hr = Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_);
 	if (FAILED(hr))

@@ -13,10 +13,12 @@ struct CBUFF_STAGESCENE
 class Stage : public GameObject
 {
     int hModel_;    //モデル番号
-    int hSphere_;    //モデル番号
-    int hGround_;    //モデル番号
-    int hArrow_;    //モデル番号
+    //int hSphere_;    //モデル番号
+    //int hGround_;    //モデル番号
+    //int hArrow_;    //モデル番号
     int hLightBall_;    //モデル番号
+    int hDice_;
+    int hWater_;
 
     Transform ball;
     Transform grou;

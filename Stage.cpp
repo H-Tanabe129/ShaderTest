@@ -29,7 +29,9 @@ void Stage::IntConstantBuffer()
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hModel_(-1), hSphere_(-1), hGround_(-1), hArrow_(-1), hLightBall_(-1),lightSourcePosition_(DEF_LIGHT_POSITION)
+    :GameObject(parent, "Stage"), hModel_(-1), hDice_(-1), hWater_(-1), 
+    /* hSphere_(-1), hGround_(-1), hArrow_(-1),*/ 
+    hLightBall_(-1),lightSourcePosition_(DEF_LIGHT_POSITION)
 {
 }
 
@@ -48,6 +50,10 @@ void Stage::Initialize()
     hModel_ = Model::Load("Assets/Ball.fbx");
     assert(hModel_ >= 0);
 
+    hDice_ = Model::Load("Assets/Dice.fbx");
+    assert(hDice_ >= 0);
+    transform_.scale_ = XMFLOAT3(3.0f, 3.0f, 3.0f);
+
     //hSphere_ = Model::Load("Assets/Ball/ball.fbx");
     //assert(hSphere_ >= 0);
     ////ball.position_ = XMFLOAT3(2, 1.5f, -3);
@@ -58,28 +64,33 @@ void Stage::Initialize()
     //assert(hGround_ >= 0);
     //grou.scale_ = XMFLOAT3(8.0f, 1.0f, 8.0f);
 
-    hArrow_ = Model::Load("Assets/arrow.fbx");
-    assert(hArrow_ >= 0);
-    arrX.position_ = XMFLOAT3(0, 1, -1.5f);
-    arrX.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
+    //hArrow_ = Model::Load("Assets/arrow.fbx");
+    //assert(hArrow_ >= 0);
+    //arrX.position_ = XMFLOAT3(0, 1, -1.5f);
+    //arrX.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
 
-    hArrow_ = Model::Load("Assets/arrow.fbx");
-    assert(hArrow_ >= 0);
-    arrY.position_ = XMFLOAT3(0, 1, -1.5f);
-    arrY.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
-    arrY.rotate_.z = 90;
+    //hArrow_ = Model::Load("Assets/arrow.fbx");
+    //assert(hArrow_ >= 0);
+    //arrY.position_ = XMFLOAT3(0, 1, -1.5f);
+    //arrY.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
+    //arrY.rotate_.z = 90;
 
-    hArrow_ = Model::Load("Assets/arrow.fbx");
-    assert(hArrow_ >= 0);
-    arrZ.position_ = XMFLOAT3(0, 1, -1.5f);
-    arrZ.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
-    arrZ.rotate_.y = 90;
+    //hArrow_ = Model::Load("Assets/arrow.fbx");
+    //assert(hArrow_ >= 0);
+    //arrZ.position_ = XMFLOAT3(0, 1, -1.5f);
+    //arrZ.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
+    //arrZ.rotate_.y = 90;
 
     hLightBall_ = Model::Load("assets/RedBall.fbx");
     assert(hLightBall_ >= 0);
     trLightBall.position_ = { 0, 0, 0 };
     trLightBall.rotate_ = { 0, 0, 0 };
     trLightBall.scale_ = { 0.4, 0.4, 0.4 };
+
+    hWater_ = Model::Load("Assets/Water.fbx");
+    assert(hWater_ >= 0);
+    grou.position_ = { 0,-2,0 };
+    
 
     IntConstantBuffer();
 
@@ -161,20 +172,24 @@ void Stage::Update()
 //描画
 void Stage::Draw()
 {
-    Model::SetTransform(hModel_, transform_);
-    Model::Draw(hModel_);
+    //Model::SetTransform(hModel_, transform_);
+    //Model::Draw(hModel_);
     Model::SetTransform(hLightBall_, trLightBall);
     Model::Draw(hLightBall_);
+    Model::SetTransform(hDice_, transform_);
+    Model::Draw(hDice_);
+    Model::SetTransform(hWater_, grou);
+    Model::Draw(hWater_);
     //Model::SetTransform(hSphere_, ball);
     //Model::Draw(hSphere_);
     //Model::SetTransform(hGround_, grou);
     //Model::Draw(hGround_);
-    Model::SetTransform(hArrow_, arrX);
-    Model::Draw(hArrow_);
-    Model::SetTransform(hArrow_, arrY);
-    Model::Draw(hArrow_);
-    Model::SetTransform(hArrow_, arrZ);
-    Model::Draw(hArrow_);
+    //Model::SetTransform(hArrow_, arrX);
+    //Model::Draw(hArrow_);
+    //Model::SetTransform(hArrow_, arrY);
+    //Model::Draw(hArrow_);
+    //Model::SetTransform(hArrow_, arrZ);
+    //Model::Draw(hArrow_);
 }
 
 //開放
